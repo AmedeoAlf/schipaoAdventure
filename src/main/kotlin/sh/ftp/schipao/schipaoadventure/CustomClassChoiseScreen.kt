@@ -13,6 +13,17 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         val centerX = width / 2
         val centerY = height / 2
 
+        /*
+            texture :Identifier = Identifier.fromNamespaceAndPath(SchipaoAdventure.MOD_ID, "")
+            u :int = 10
+            v :int = 13
+            regionWidth :int = 14
+            regionHeight :int = 14
+
+            // renderLayer, texture, x, y, u, v, width, height, regionWidth, regionHeight, textureWidth, textureHeight
+            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, 90, 190, u, v, 14, 14, regionWidth, regionHeight, 256, 256)
+        */
+
         // Chooser Button
         val btnClass = ButtonWidget.builder( Text.literal("Hello World") )
         {
