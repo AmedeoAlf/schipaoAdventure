@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.toast.SystemToast
 import net.minecraft.text.Text
 import net.minecraft.client.MinecraftClient
+import net.minecraft.util.Identifier
 
 class CustomClassChoiceScreen(title: Text) : Screen(title) {
 
@@ -13,23 +14,12 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         val centerX = width / 2
         val centerY = height / 2
 
-        /*
-            texture :Identifier = Identifier.fromNamespaceAndPath(SchipaoAdventure.MOD_ID, "")
-            u :int = 10
-            v :int = 13
-            regionWidth :int = 14
-            regionHeight :int = 14
-
-            // renderLayer, texture, x, y, u, v, width, height, regionWidth, regionHeight, textureWidth, textureHeight
-            graphics.blit(RenderPipelines.GUI_TEXTURED, texture, 90, 190, u, v, 14, 14, regionWidth, regionHeight, 256, 256)
-        */
-
         // Chooser Button
         val btnClass = ButtonWidget.builder( Text.literal("Hello World") )
         {
             showToast()
         }
-            .dimensions(centerX - 60, centerY - 40, 120, 20)
+            .dimensions(centerX - 60, centerY + 40, 120, 20)
             .build()
 
         // Arrows Buttons
@@ -37,14 +27,14 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         {
 
         }
-            .dimensions(centerX + 65, centerY + 25, 10, 10)
+            .dimensions(centerX + 65, centerY - 25, 10, 10)
             .build()
 
         val btnArrowL = ButtonWidget.builder( Text.literal("<") )
         {
 
         }
-            .dimensions(centerX - 65, centerY + 25, 10, 10)
+            .dimensions(centerX - 75, centerY - 25, 10, 10)
             .build()
 
         addDrawableChild(btnClass)
@@ -77,6 +67,21 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
             height / 2 - 40,
             0xFFFFFF,
             true
+        )
+
+        super.render(context, mouseX, mouseY, delta)
+
+        val texture = Identifier.of(
+            SchipaoAdventure.MOD_ID,
+            "textures/gui/icon.png"
+        )
+
+        context.drawTexture(
+            texture,
+            0, 0, // Coordinate angolo NW
+            0f, 0f,
+            300, 300, // Texture che viene mostrata
+            1065, 405 // Pixel texture
         )
     }
 }
