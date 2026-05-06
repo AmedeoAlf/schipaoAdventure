@@ -13,14 +13,32 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         val centerX = width / 2
         val centerY = height / 2
 
-        val button = ButtonWidget.builder(
-            Text.literal("Hello World")
-        ) {
+        // Chooser Button
+        val btnClass = ButtonWidget.builder( Text.literal("Hello World") )
+        {
             showToast()
-        }.dimensions(centerX - 60, centerY - 10, 120, 20)
+        }
+            .dimensions(centerX - 60, centerY - 40, 120, 20)
             .build()
 
-        addDrawableChild(button)
+        // Arrows Buttons
+        val btnArrowR = ButtonWidget.builder( Text.literal(">") )
+        {
+
+        }
+            .dimensions(centerX + 65, centerY + 25, 10, 10)
+            .build()
+
+        val btnArrowL = ButtonWidget.builder( Text.literal("<") )
+        {
+
+        }
+            .dimensions(centerX - 65, centerY + 25, 10, 10)
+            .build()
+
+        addDrawableChild(btnClass)
+        addDrawableChild(btnArrowR)
+        addDrawableChild(btnArrowL)
     }
 
     private fun showToast() {
@@ -30,8 +48,8 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
             SystemToast.create(
                 client,
                 SystemToast.Type.NARRATOR_TOGGLE,
-                Text.literal("Hello World!"),
-                Text.literal("This is a toast.")
+                Text.literal("Good choise!"),
+                Text.literal("learn to use it")
             )
         )
 
