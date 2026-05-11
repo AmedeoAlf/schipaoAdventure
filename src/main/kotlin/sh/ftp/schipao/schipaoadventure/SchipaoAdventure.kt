@@ -19,13 +19,5 @@ object SchipaoAdventure : ModInitializer {
 
 		ModItems.registerModItems()
 		ModBlocks.registerModBlocks()
-
-		ClientPlayConnectionEvents.JOIN.register { handler, sender, client ->
-			client.execute {
-				MinecraftClient.getInstance().setScreen(
-					CustomClassChoiceScreen(Text.literal("Choose your class"))
-				)
-			}
-		}
 	}
 }

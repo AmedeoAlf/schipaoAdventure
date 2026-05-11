@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 
 class CustomClassChoiceScreen(title: Text) : Screen(title) {
+    var app = 0
 
     override fun init() {
         val centerX = width / 2
@@ -25,14 +26,13 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         // Arrows Buttons
         val btnArrowR = ButtonWidget.builder( Text.literal(">") )
         {
-
+            app = (app + 1) % 4
         }
             .dimensions(centerX + 65, centerY - 25, 10, 10)
             .build()
-
         val btnArrowL = ButtonWidget.builder( Text.literal("<") )
         {
-
+            app = (app - 1 + 4) % 4
         }
             .dimensions(centerX - 75, centerY - 25, 10, 10)
             .build()
@@ -43,18 +43,20 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
     }
 
     private fun showToast() {
-        val client = MinecraftClient.getInstance()
+        val player = MinecraftClient.getInstance().player
 
-        client.toastManager.add(
-            SystemToast.create(
-                client,
-                SystemToast.Type.NARRATOR_TOGGLE,
-                Text.literal("Good choise!"),
-                Text.literal("learn to use it")
+        if (player != null) {
+
+            val data = player as PlayerData
+            data.setSelectedClass(app)
+
+            MinecraftClient.getInstance().player?.sendMessage(
+                Text.literal("Class: ${(player as PlayerData).getSelectedClass()}"),
+                false
             )
-        )
 
-        MinecraftClient.getInstance().setScreen(null)
+            MinecraftClient.getInstance().setScreen(null)
+        }
     }
 
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
@@ -73,7 +75,7 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
 
         val texture = Identifier.of(
             SchipaoAdventure.MOD_ID,
-            "textures/gui/icon.png"
+            "textures/gui/class/"+ app +".png"
         )
 
         context.drawTexture(

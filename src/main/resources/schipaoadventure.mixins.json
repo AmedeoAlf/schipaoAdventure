@@ -3,7 +3,7 @@
 	"package": "sh.ftp.schipao.schipaoadventure.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"PlayerEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
