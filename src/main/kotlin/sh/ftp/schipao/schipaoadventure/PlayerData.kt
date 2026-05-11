@@ -2,7 +2,7 @@ package sh.ftp.schipao.schipaoadventure
 
 interface PlayerData {
 
-    fun getSelectedClass(): Int
+    fun getSelectedClass() :Int
 
-    fun setSelectedClass(value: Int)
+    fun setSelectedClass(value :Int)
 }

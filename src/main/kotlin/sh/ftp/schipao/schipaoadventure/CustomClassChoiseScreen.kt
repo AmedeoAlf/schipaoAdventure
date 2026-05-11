@@ -8,7 +8,7 @@ import net.minecraft.text.Text
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 
-class CustomClassChoiceScreen(title: Text) : Screen(title) {
+class CustomClassChoiceScreen(title: Text) :Screen(title) {
     var app = 0
 
     override fun init() {
@@ -16,7 +16,7 @@ class CustomClassChoiceScreen(title: Text) : Screen(title) {
         val centerY = height / 2
 
         // Chooser Button
-        val btnClass = ButtonWidget.builder( Text.literal("Hello World") )
+        val btnClass = ButtonWidget.builder( Text.literal("Select") )
         {
             showToast()
         }

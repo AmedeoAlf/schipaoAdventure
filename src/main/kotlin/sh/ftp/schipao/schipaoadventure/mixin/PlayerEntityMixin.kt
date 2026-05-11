@@ -12,6 +12,13 @@ import sh.ftp.schipao.schipaoadventure.PlayerData
 @Mixin(PlayerEntity::class)
 class PlayerEntityMixin : PlayerData {
 
+    /*
+        0 -> poaceae
+        1 -> aer
+        2 -> aqua
+        3 -> ignis
+     */
+
     @Unique
     private var selectedClass: Int = -1
 
