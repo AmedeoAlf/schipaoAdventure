@@ -20,7 +20,7 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
         {
             showToast()
         }
-            .dimensions(centerX - 60, centerY + 40, 120, 20)
+            .dimensions(centerX - 60, centerY + 80, 120, 20)
             .build()
 
         // Arrows Buttons
@@ -28,13 +28,13 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
         {
             app = (app + 1) % 4
         }
-            .dimensions(centerX + 65, centerY - 25, 10, 10)
+            .dimensions(centerX + 125, centerY - 25, 10, 10)
             .build()
         val btnArrowL = ButtonWidget.builder( Text.literal("<") )
         {
             app = (app - 1 + 4) % 4
         }
-            .dimensions(centerX - 75, centerY - 25, 10, 10)
+            .dimensions(centerX - 135, centerY - 25, 10, 10)
             .build()
 
         addDrawableChild(btnClass)
@@ -75,15 +75,16 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
 
         val texture = Identifier.of(
             SchipaoAdventure.MOD_ID,
-            "textures/gui/class/"+ app +".png"
+            //"textures/gui/class/"+ app +".png"
+            "textures/gui/book.png"
         )
 
         context.drawTexture(
             texture,
-            0, 0, // Coordinate angolo NW
+            width / 2 - 133, height / 2 - 88, // Coordinate angolo NW
             0f, 0f,
-            300, 300, // Texture che viene mostrata
-            1065, 405 // Pixel texture
+            266, 176, // Texture che viene mostrata
+            266, 176 // Pixel texture
         )
     }
 }
