@@ -28,13 +28,13 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
         {
             app = (app + 1) % 4
         }
-            .dimensions(centerX + 125, centerY - 25, 10, 10)
+            .dimensions(centerX + 125, centerY - 15, 10, 30)
             .build()
         val btnArrowL = ButtonWidget.builder( Text.literal("<") )
         {
             app = (app - 1 + 4) % 4
         }
-            .dimensions(centerX - 135, centerY - 25, 10, 10)
+            .dimensions(centerX - 135, centerY - 15, 10, 30)
             .build()
 
         addDrawableChild(btnClass)
