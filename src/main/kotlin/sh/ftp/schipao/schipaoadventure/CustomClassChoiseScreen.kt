@@ -48,10 +48,10 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
         if (player != null) {
 
             val data = player as PlayerData
-            data.setSelectedClass(app)
+            data.playerClass = app
 
             MinecraftClient.getInstance().player?.sendMessage(
-                Text.literal("Class: ${(player as PlayerData).getSelectedClass()}"),
+                Text.literal("Class: ${(player as PlayerData).playerClass}"),
                 false
             )
 

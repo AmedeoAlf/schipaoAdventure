@@ -1,5 +1,6 @@
 package sh.ftp.schipao.schipaoadventure.mixin
 
+import kotlin.reflect.full.memberProperties
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
 import org.spongepowered.asm.mixin.Mixin
@@ -20,23 +21,19 @@ class PlayerEntityMixin : PlayerData {
      */
 
     @Unique
-    private var selectedClass: Int = -1
-
-    override fun getSelectedClass(): Int {
-        return selectedClass
-    }
-
-    override fun setSelectedClass(value: Int) {
-        selectedClass = value
-    }
+    override var playerClass: Int = -1
 
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
-        nbt.putInt("SelectedClass", selectedClass)
+        nbt.putInt("SelectedClass", playerClass)
+        for (member in PlayerData::class.memberProperties) {
+            nbt.putInt(member.name, member.get(this) as Int)
+        }
+        
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
     private fun readCustomDataFromNbt(nbt: NbtCompound, ci: CallbackInfo) {
-        selectedClass = nbt.getInt("SelectedClass")
+        playerClass = nbt.getInt("SelectedClass")
     }
 }

@@ -29,6 +29,8 @@ dependencies {
 	mappings("net.fabricmc:yarn:${providers.gradleProperty("yarn_mappings").get()}:v2")
 	modImplementation("net.fabricmc:fabric-loader:${providers.gradleProperty("loader_version").get()}")
 
+    implementation(kotlin("reflect"))
+
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${providers.gradleProperty("fabric_api_version").get()}")
 	modImplementation("net.fabricmc:fabric-language-kotlin:${providers.gradleProperty("fabric_kotlin_version").get()}")
