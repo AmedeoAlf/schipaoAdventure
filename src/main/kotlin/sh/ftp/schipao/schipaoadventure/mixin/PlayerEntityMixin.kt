@@ -23,17 +23,24 @@ class PlayerEntityMixin : PlayerData {
     @Unique
     override var playerClass: Int = -1
 
+//    @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
+//    private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
+//        nbt.putInt("SelectedClass", playerClass)
+//        for (member in PlayerData::class.memberProperties) {
+//            nbt.putInt(member.name, member.get(this) as Int)
+//        }
+//
+//    }
+
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
+        println("SAVING CLASS: $playerClass")
         nbt.putInt("SelectedClass", playerClass)
-        for (member in PlayerData::class.memberProperties) {
-            nbt.putInt(member.name, member.get(this) as Int)
-        }
-        
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
     private fun readCustomDataFromNbt(nbt: NbtCompound, ci: CallbackInfo) {
         playerClass = nbt.getInt("SelectedClass")
+        println("Loaded class: $playerClass")
     }
 }
