@@ -1,31 +1,43 @@
 package sh.ftp.schipao.schipaoadventure.mixin
 
-import kotlin.reflect.full.memberProperties
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.*
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Unique
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import sh.ftp.schipao.schipaoadventure.PlayerData
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.full.memberProperties
 
-fun NbtCompound.putAny(key: String, value: Any?) = when(value) {
-    is Byte -> putByte(key, value)
-    is Int -> putInt(key, value)
-    is Short -> putShort(key, value)
-    is Long -> putLong(key, value)
+fun Any.toNbtElement(typeParams: List<KTypeProjection>): NbtElement = when (this) {
+    is Byte -> NbtByte.of(this)
+    is Int -> NbtInt.of(this)
+    is Short -> NbtShort.of(this)
+    is Long -> NbtLong.of(this)
 
-    is String -> putString(key, value)
+    is String -> NbtString.of(this)
+    is Boolean -> NbtByte.of(this)
 
-    is Boolean -> putBoolean(key, value)
+    is Float -> NbtFloat.of(this)
+    is Double -> NbtDouble.of(this)
 
-    is Float -> putFloat(key, value)
-    is Double -> putDouble(key, value)
+    is List<*> -> NbtList().apply {
+        val type = typeParams.first().type!!
+        this@toNbtElement.forEach {
+            add(it!!.toNbtElement(type.arguments))
+        }
+    }
 
-    // TODO: list, compound
+    is Map<*, *> -> NbtCompound().apply {
+        val type = typeParams[1].type!!
+        this@toNbtElement.forEach { (k, v) ->
+            if (v != null) put(k.toString(), v.toNbtElement(type.arguments))
+        }
+    }
 
-    else -> throw Exception("Can't cast value $value to nbt")
+    else -> throw Exception("Can't cast value $this to nbt")
 }
 
 @Mixin(PlayerEntity::class)
@@ -44,8 +56,9 @@ class PlayerEntityMixin : PlayerData {
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
         nbt.putInt("SelectedClass", playerClass)
-        for (member in PlayerData::class.memberProperties)
-            nbt.putAny(member.name, member.get(this))
+        for (member in PlayerData::class.memberProperties) nbt.put(
+            member.name, member.get(this)?.toNbtElement(member.returnType.arguments)
+        )
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
