@@ -62,21 +62,14 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(context, mouseX, mouseY, delta)
 
-        context.drawText(
-            textRenderer,
-            Text.literal("Special Button"),
-            width / 2 - 60,
-            height / 2 - 40,
-            0xFFFFFF,
-            true
-        )
-
-        super.render(context, mouseX, mouseY, delta)
-
         val texture = Identifier.of(
             SchipaoAdventure.MOD_ID,
-            //"textures/gui/class/"+ app +".png"
             "textures/gui/book.png"
+        )
+
+        val rune = Identifier.of(
+            SchipaoAdventure.MOD_ID,
+            "textures/gui/class/$app.png"
         )
 
         context.drawTexture(
@@ -85,6 +78,14 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
             0f, 0f,
             266, 176, // Texture che viene mostrata
             266, 176 // Pixel texture
+        )
+
+        context.drawTexture(
+            rune,
+            width / 2 - 8, height / 2 - 8,
+            0f, 0f,
+            16, 16,
+            16, 16
         )
     }
 }
