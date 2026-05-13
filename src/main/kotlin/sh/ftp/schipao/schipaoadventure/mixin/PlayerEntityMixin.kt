@@ -10,6 +10,24 @@ import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import sh.ftp.schipao.schipaoadventure.PlayerData
 
+fun NbtCompound.putAny(key: String, value: Any?) = when(value) {
+    is Byte -> putByte(key, value)
+    is Int -> putInt(key, value)
+    is Short -> putShort(key, value)
+    is Long -> putLong(key, value)
+
+    is String -> putString(key, value)
+
+    is Boolean -> putBoolean(key, value)
+
+    is Float -> putFloat(key, value)
+    is Double -> putDouble(key, value)
+
+    // TODO: list, compound
+
+    else -> throw Exception("Can't cast value $value to nbt")
+}
+
 @Mixin(PlayerEntity::class)
 class PlayerEntityMixin : PlayerData {
 
@@ -26,10 +44,8 @@ class PlayerEntityMixin : PlayerData {
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
         nbt.putInt("SelectedClass", playerClass)
-        for (member in PlayerData::class.memberProperties) {
-            nbt.putInt(member.name, member.get(this) as Int)
-        }
-        
+        for (member in PlayerData::class.memberProperties)
+            nbt.putAny(member.name, member.get(this))
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
