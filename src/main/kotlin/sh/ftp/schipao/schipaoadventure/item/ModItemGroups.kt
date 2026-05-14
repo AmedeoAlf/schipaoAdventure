@@ -26,6 +26,7 @@ object ModItemGroups {
                 entries.add(ModBlocks.MITHRIL_BLOCK)
 
                 entries.add(ModItems.MITHRIL_FEATHER)
+                entries.add(ModItems.STAR_OF_ORIGINS)
             }
             .build()
     )

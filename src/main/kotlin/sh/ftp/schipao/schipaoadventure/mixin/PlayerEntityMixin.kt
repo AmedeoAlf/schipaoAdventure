@@ -35,6 +35,7 @@ abstract class PlayerEntityMixin : PlayerData {
                 member.name, member.get(this)?.toNbtElement(member.returnType.arguments)
             )
         }
+        println("SAVING CLASS: $playerClass")
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
@@ -43,5 +44,6 @@ abstract class PlayerEntityMixin : PlayerData {
             if (member !is KMutableProperty<*>) continue
             member.setter.call(this, nbt.get(member.name)!!.toOriginal(member.returnType))
         }
+        println("Loaded class: $playerClass")
     }
 }
