@@ -2,46 +2,79 @@ package sh.ftp.schipao.schipaoadventure.mixin
 
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.*
+import org.spongepowered.asm.mixin.Debug
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Unique
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import sh.ftp.schipao.schipaoadventure.PlayerData
+import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.typeOf
 
-fun Any.toNbtElement(typeParams: List<KTypeProjection>): NbtElement = when (this) {
-    is Byte -> NbtByte.of(this)
-    is Int -> NbtInt.of(this)
-    is Short -> NbtShort.of(this)
-    is Long -> NbtLong.of(this)
+fun Any.toNbtElement(typeParams: List<KTypeProjection>): NbtElement =
+    if (this.javaClass == 1.javaClass) NbtInt.of(this as Int) else throw Exception("LOL")
+//when (this) {
+//    is Byte -> NbtByte.of(this)
+//    is Int -> NbtInt.of(this)
+//    is Short -> NbtShort.of(this)
+//    is Long -> NbtLong.of(this)
+//
+//    is String -> NbtString.of(this)
+//    is Boolean -> NbtByte.of(this)
+//
+//    is Float -> NbtFloat.of(this)
+//    is Double -> NbtDouble.of(this)
+//
+//    is List<*> -> NbtList().apply {
+//        val type = typeParams.first().type!!
+//        this@toNbtElement.forEach {
+//            add(it!!.toNbtElement(type.arguments))
+//        }
+//    }
+//
+//    is Map<*, *> -> NbtCompound().apply {
+//        val type = typeParams[1].type!!
+//        this@toNbtElement.forEach { (k, v) ->
+//            if (v != null) put(k.toString(), v.toNbtElement(type.arguments))
+//        }
+//    }
+//
+//    else -> throw Exception("Can't cast value $this to nbt")
+//}
 
-    is String -> NbtString.of(this)
-    is Boolean -> NbtByte.of(this)
+fun NbtElement.toOriginal(type: KType): Any = when (this) {
+    is NbtByte -> if (type == typeOf<Byte>()) this.byteValue() else throw TypeCastException("Can't assign byte to $type")
+    is NbtShort -> if (type == typeOf<Short>()) this.shortValue() else throw TypeCastException("Can't assign short to $type")
+    is NbtInt -> if (type == typeOf<Int>()) this.intValue() else throw TypeCastException("Can't assign int to $type")
+    is NbtLong -> if (type == typeOf<Long>()) this.longValue() else throw TypeCastException("Can't assign long to $type")
 
-    is Float -> NbtFloat.of(this)
-    is Double -> NbtDouble.of(this)
+    is NbtFloat -> if (type == typeOf<Float>()) this.floatValue() else throw TypeCastException("Can't assign float to $type")
+    is NbtDouble -> if (type == typeOf<Double>()) this.doubleValue() else throw TypeCastException("Can't assign double to $type")
 
-    is List<*> -> NbtList().apply {
-        val type = typeParams.first().type!!
-        this@toNbtElement.forEach {
-            add(it!!.toNbtElement(type.arguments))
-        }
+    is NbtString -> if (type == typeOf<String>()) this.asString() else throw TypeCastException("Can't assign string to $type")
+
+    is NbtList -> if ((type as? KClass<*>)?.isSubclassOf(List::class) == true) this.toList()
+        .map { it.toOriginal(type.arguments[0].type!!) }
+    else throw TypeCastException("Can't assign list to $type")
+
+    is NbtCompound -> if ((type as? KClass<*>)?.isSubclassOf(Map::class) == true) this.keys.associateWith {
+        this.get(it)!!.toOriginal(type.arguments[1].type!!)
     }
+    else throw TypeCastException("Can't assign compound to $type")
 
-    is Map<*, *> -> NbtCompound().apply {
-        val type = typeParams[1].type!!
-        this@toNbtElement.forEach { (k, v) ->
-            if (v != null) put(k.toString(), v.toNbtElement(type.arguments))
-        }
-    }
 
-    else -> throw Exception("Can't cast value $this to nbt")
+    else -> throw TypeCastException("Can't cast value $this from nbt")
 }
 
+@Debug(export = true)
 @Mixin(PlayerEntity::class)
-class PlayerEntityMixin : PlayerData {
+abstract class PlayerEntityMixin : PlayerData {
 
     /*
         0 -> poaceae
@@ -55,14 +88,18 @@ class PlayerEntityMixin : PlayerData {
 
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
-        nbt.putInt("SelectedClass", playerClass)
-        for (member in PlayerData::class.memberProperties) nbt.put(
-            member.name, member.get(this)?.toNbtElement(member.returnType.arguments)
-        )
+        for (member in PlayerData::class.memberProperties) {
+            nbt.put(
+                member.name, member.get(this as Any as PlayerData)?.toNbtElement(member.returnType.arguments)
+            )
+        }
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
     private fun readCustomDataFromNbt(nbt: NbtCompound, ci: CallbackInfo) {
-        playerClass = nbt.getInt("SelectedClass")
+        for (member in PlayerData::class.memberProperties) {
+            if (member !is KMutableProperty<*>) continue
+            member.setter.call(this, nbt.get(member.name))
+        }
     }
 }
