@@ -1,17 +1,22 @@
 package sh.ftp.schipao.schipaoadventure.mixin
 
-import kotlin.reflect.full.memberProperties
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
+import org.spongepowered.asm.mixin.Debug
 import org.spongepowered.asm.mixin.Mixin
 import org.spongepowered.asm.mixin.Unique
 import org.spongepowered.asm.mixin.injection.At
 import org.spongepowered.asm.mixin.injection.Inject
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import sh.ftp.schipao.schipaoadventure.PlayerData
+import sh.ftp.schipao.schipaoadventure.toNbtElement
+import sh.ftp.schipao.schipaoadventure.toOriginal
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.full.memberProperties
 
+@Debug(export = true)
 @Mixin(PlayerEntity::class)
-class PlayerEntityMixin : PlayerData {
+abstract class PlayerEntityMixin : PlayerData {
 
     /*
         0 -> poaceae
@@ -23,24 +28,22 @@ class PlayerEntityMixin : PlayerData {
     @Unique
     override var playerClass: Int = -1
 
-//    @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
-//    private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
-//        nbt.putInt("SelectedClass", playerClass)
-//        for (member in PlayerData::class.memberProperties) {
-//            nbt.putInt(member.name, member.get(this) as Int)
-//        }
-//
-//    }
-
     @Inject(method = ["writeCustomDataToNbt"], at = [At("TAIL")])
     private fun writeCustomDataToNbt(nbt: NbtCompound, ci: CallbackInfo) {
+        for (member in PlayerData::class.memberProperties) {
+            nbt.put(
+                member.name, member.get(this)?.toNbtElement(member.returnType.arguments)
+            )
+        }
         println("SAVING CLASS: $playerClass")
-        nbt.putInt("SelectedClass", playerClass)
     }
 
     @Inject(method = ["readCustomDataFromNbt"], at = [At("TAIL")])
     private fun readCustomDataFromNbt(nbt: NbtCompound, ci: CallbackInfo) {
-        playerClass = nbt.getInt("SelectedClass")
+        for (member in PlayerData::class.memberProperties) {
+            if (member !is KMutableProperty<*>) continue
+            member.setter.call(this, nbt.get(member.name)!!.toOriginal(member.returnType))
+        }
         println("Loaded class: $playerClass")
     }
 }
