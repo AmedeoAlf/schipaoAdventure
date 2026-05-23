@@ -18,11 +18,11 @@ class OriginStarItem(settings: Settings) : Item(settings){
         world: World,
         user: PlayerEntity,
         hand: Hand
-    ): TypedActionResult<ItemStack?>? {
+    ): TypedActionResult<ItemStack?> {
 
         val stack = user.getStackInHand(hand)
 
-        if (!world.isClient) {
+        if (world.isClient) {
             MinecraftClient.getInstance().setScreen(
                 CustomClassChoiceScreen(
                     Text.literal("Choose Class")
