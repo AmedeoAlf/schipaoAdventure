@@ -1,5 +1,6 @@
 package sh.ftp.schipao.schipaoadventure
 
+import com.example.command.ComandCustom
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.MinecraftClient
@@ -19,5 +20,7 @@ object SchipaoAdventure : ModInitializer {
 
 		ModItems.registerModItems()
 		ModBlocks.registerModBlocks()
+
+		ComandCustom.register()
 	}
 }
