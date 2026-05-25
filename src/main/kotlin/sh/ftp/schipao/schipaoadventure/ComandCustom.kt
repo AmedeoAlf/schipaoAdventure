@@ -4,8 +4,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.server.command.CommandManager
 import net.minecraft.text.Text
+import com.mojang.brigadier.arguments.StringArgumentType
 import sh.ftp.schipao.schipaoadventure.PlayerData
 import sh.ftp.schipao.schipaoadventure.playerclasses.playerClasses
+import java.util.concurrent.CompletableFuture
 
 object ComandCustom {
 
@@ -19,7 +21,7 @@ object ComandCustom {
                         "name",
                         StringArgumentType.word()
                     )
-                        .suggests{ctx, builder -> {
+                        .suggests{ctx, builder -> CompletableFuture.supplyAsync {
                             playerClasses.forEach { 
                                 builder.suggest(it.name)
                             }
@@ -30,16 +32,16 @@ object ComandCustom {
                             val player = context.source.playerOrThrow
 
                             val data = player as PlayerData
-                            val decided = context.getArgument("name", String.javaClass)
+                            val decided = context.getArgument("name", String::class.java)
 
                             data.playerClass = playerClasses.indexOfFirst { it.name == decided }
 
                             context.source.sendFeedback(
                                 { 
-                                    if (decided == -1)
+                                    if (data.playerClass == -1)
                                         Text.literal("Class reset successful")
                                     else 
-                                        Text.literal("Class changed successfully to ${playerClasses[decided].name}") 
+                                        Text.literal("Class changed successfully to ${playerClasses[data.playerClass].name}") 
                                 },
                                 false
                             )
