@@ -3,12 +3,11 @@ package sh.ftp.schipao.schipaoadventure
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.client.gui.widget.ButtonWidget
 import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.toast.SystemToast
 import net.minecraft.text.Text
 import net.minecraft.client.MinecraftClient
 import net.minecraft.util.Identifier
 
-class CustomClassChoiceScreen(title: Text) :Screen(title) {
+class CustomClassChoiceScreen(title: Text, val onClose: () -> Unit = {}) :Screen(title) {
     var app = 0
 
     override fun init() {
@@ -51,10 +50,10 @@ class CustomClassChoiceScreen(title: Text) :Screen(title) {
             data.playerClass = app
 
             MinecraftClient.getInstance().player?.sendMessage(
-                Text.literal("Class: ${(player as PlayerData).playerClass}"),
-                false
+                Text.literal("Class: ${(player as PlayerData).playerClass}"), false
             )
 
+            onClose()
             MinecraftClient.getInstance().setScreen(null)
         }
     }
