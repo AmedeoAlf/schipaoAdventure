@@ -7,9 +7,10 @@ import net.minecraft.text.Text
 
 class schipaoAdventureClient :ClientModInitializer {
     companion object {
-        fun handlePlayerClassPayload(payload: PlayerClassPayload, ctx: ClientPlayNetworking.Context) {
+        fun handlePlayerDataPayload(payload: PlayerDataPayload, ctx: ClientPlayNetworking.Context) {
             val player = ctx.client().player!!
-            player.sendMessage(Text.literal("got $payload"))
+            player.sendMessage(Text.literal("got ${payload.data}"))
+            (player as PlayerData).deserialize(payload.data)
         }
     }
 
@@ -35,6 +36,6 @@ class schipaoAdventureClient :ClientModInitializer {
             }
         }
 
-        ClientPlayNetworking.registerGlobalReceiver(PlayerClassPayload.ID, schipaoAdventureClient::handlePlayerClassPayload)
+        ClientPlayNetworking.registerGlobalReceiver(PlayerDataPayload.ID, schipaoAdventureClient::handlePlayerDataPayload)
     }
 }

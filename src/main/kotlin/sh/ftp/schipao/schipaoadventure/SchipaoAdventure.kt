@@ -13,14 +13,13 @@ object SchipaoAdventure : ModInitializer {
 	const val MOD_ID :String = "schipaoadventure"
     val LOGGER :Logger = LoggerFactory.getLogger(MOD_ID)
 
-	fun handlePlayerClassPayload(payload: PlayerClassPayload, ctx: ServerPlayNetworking.Context) {
-		(ctx.player() as PlayerData).playerClass = payload.pClass
-	}
+	fun handlePlayerDataPayload(payload: PlayerDataPayload, ctx: ServerPlayNetworking.Context) =
+		(ctx.player() as PlayerData).deserialize(payload.data)
 
 	override fun onInitialize() {
-		PayloadTypeRegistry.playS2C().register(PlayerClassPayload.ID, PlayerClassPayload.CODEC)
-		PayloadTypeRegistry.playC2S().register(PlayerClassPayload.ID, PlayerClassPayload.CODEC)
-		ServerPlayNetworking.registerGlobalReceiver(PlayerClassPayload.ID, this::handlePlayerClassPayload)
+		PayloadTypeRegistry.playS2C().register(PlayerDataPayload.ID, PlayerDataPayload.CODEC)
+		PayloadTypeRegistry.playC2S().register(PlayerDataPayload.ID, PlayerDataPayload.CODEC)
+		ServerPlayNetworking.registerGlobalReceiver(PlayerDataPayload.ID, this::handlePlayerDataPayload)
 
 		ModItemGroups.registerItemGroups()
 
